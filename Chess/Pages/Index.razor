@@ -1,0 +1,100 @@
+﻿@page "/"
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+<style>
+    body {
+        background-color: #B5C4B5;
+        
+        
+    }
+ .container {
+        position: absolute;
+        width: 30vw; 
+        height: 20vh;
+        margin-left: 30%;
+        top: 66%;
+    }
+    .NormalChess,
+    .GameModes {
+        width: 30vw;
+        height: 10vh;
+        color: white;
+        font-size: 50px;
+        font-family: 'Inter', sans-serif;
+        position: absolute;
+        z-index: 2;
+        transition: transform 0.1s ease; 
+
+    }
+    .NormalChess{
+        margin-left: 30%;
+    }
+
+    .NormalChess {
+        top: 20%;
+
+    }
+
+    .NormalChess:hover,
+    .NormalChess.active {
+        color: black;
+        transform: scale(0.95); 
+    }
+
+   
+
+    .GameModes.active {
+        color: black;
+      
+    }
+    .container:hover .GameModeCircle {
+        background: #B5C4B5; 
+        
+       
+    }
+    .container:hover .GameModeCircle, .GameModes  {
+       
+        transform: scale(0.95);
+       
+    }
+    
+    .GameModeCircle {
+        width: 30vw;
+        height: 10vh;
+        right:12% ;
+        top:5%;
+        position: absolute;
+        background: #804D6E;
+        border-radius: 26px;
+        transition: background-color 0.2s; 
+        transition: transform 0.1s ease;    
+    }
+
+    
+    
+</style>
+<div class="Rectangle8" style="width: 80vw; height: 85vh; background: #A5A29E; border-radius: 37px"></div>
+<div class="NormalChess" @onclick="NavigateToNormalChess">Normal Chess<br /></div>
+
+<div class="container" @onclick="NavigateToGameModes">
+    <div class="GameModes">Game Modes<br/></div>
+    <div class="GameModeCircle"></div>
+</div>
+
+@code {
+    private void NavigateToNormalChess()
+    {
+        NavManager.NavigateTo("NormalChess");
+        
+    }
+    private void NavigateToGameModes()
+    {
+       
+        NavManager.NavigateTo("GameModes");
+
+    }
+}
+
+<ChessBoard2 />
+

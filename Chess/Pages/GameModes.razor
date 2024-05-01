@@ -1,0 +1,132 @@
+@page "/GameModes"
+@inject NavigationManager NavManager
+<style>
+    body {
+        background-color: #B5C4B5;
+        
+        
+    }
+
+    .GameModeCircle1 {
+        width: 30vw;
+        height: 10vh;
+        right:30% ;
+        top:20%;
+        position: absolute;
+        background: #B5C4B5;
+        border-radius: 26px;
+        transition: background-color 0.2s; 
+        transition: transform 0.1s ease;    
+    }
+    .GameModeCircle2 {
+        width: 30vw;
+        height: 10vh;
+        right:30% ;
+        top:40%;
+        position: absolute;
+        background: #B5C4B5;
+        border-radius: 26px;
+        transition: background-color 0.2s; 
+        transition: transform 0.1s ease;    
+    }
+    .GameModeCircle3 {
+        width: 30vw;
+        height: 10vh;
+        right:30% ;
+        top:60%;
+        position: absolute;
+        background: #B5C4B5;
+        border-radius: 26px;
+        transition: background-color 0.2s; 
+        transition: transform 0.1s ease;    
+    }
+    .GameModeCircle4 {
+        width: 30vw;
+        height: 10vh;
+        right:30% ;
+        top:80%;
+        position: absolute;
+        background: #B5C4B5;
+        border-radius: 26px;
+        transition: background-color 0.2s; 
+        transition: transform 0.1s ease;    
+    }
+    .AtomicChess,
+    .HexChess,
+    .CardChess,
+    .TBD {
+        width: 30vw;
+        height: 10vh;
+        color: white;
+        font-size: 50px;
+        font-family: 'Inter', sans-serif;
+        position: absolute;
+        z-index: 2;
+        transition: transform 0.1s ease; 
+        left:10%;
+
+    }
+    
+    .GameModeCircle1:hover {
+        background: #A5A29E; 
+        transform: scale(0.95);
+       
+    }
+    .GameModeCircle2:hover {
+        background: #A5A29E;
+        transform: scale(0.95);
+       
+    }
+    .GameModeCircle3:hover {
+        background: #A5A29E;
+        transform: scale(0.95);
+       
+    }
+    .GameModeCircle4:hover {
+        background: #A5A29E; 
+        transform: scale(0.95);
+       
+    }
+    
+    
+</style>
+
+<div class="Rectangle8" style="width: 80vw; height: 85vh; background: #804D6E; border-radius: 37px"></div>
+<div class="GameModeCircle1" @onclick="NavigateToAtomicChess">
+    <div class="AtomicChess">Atomic Chess<br/></div>
+    </div>
+<div class="GameModeCircle2" @onclick="NavigateToHexChess">
+    <div class="HexChess">Hex Chess<br/></div>   
+    </div>
+<div class="GameModeCircle3" @onclick="NavigateToCardChess">
+    <div class="CardChess">Card Chess<br/></div>
+    </div>
+<div class="GameModeCircle4" @onclick="NavigateToTBD">
+    <div class="TBD">TBD<br/></div>
+    </div>
+
+@code {
+    private void NavigateToAtomicChess()
+    {
+        NavManager.NavigateTo("AtomicChess");
+        
+    }
+    private void NavigateToHexChess()
+    {
+       
+        NavManager.NavigateTo("HexChess");
+
+    }
+    private void NavigateToCardChess()
+    {
+       
+        NavManager.NavigateTo("CardChess");
+
+    }
+    private void NavigateToTBD()
+    {
+       
+        NavManager.NavigateTo("TBD");
+
+    }
+}

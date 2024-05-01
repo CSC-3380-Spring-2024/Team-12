@@ -1,0 +1,267 @@
+
+<div class="chessboard">
+    @for (int row = 0; row < 8; row++)
+    {
+        <div class="chessboard-row">
+            @for (int col = 0; col < 8; col++)
+            {
+                var localRow = row;
+                var localCol = col;
+                <div class="@GetClasses(localRow, localCol)"  @onclick="(() => HandleClick(localRow, localCol))">
+                </div>
+            }
+        </div>
+    }
+</div>
+@code { 
+    private string[,] chessPieces = new string[8, 8];
+    private bool isPieceSelected = false;
+    private (int row, int col) selectedPiece = (-1, -1); // Updated to track selected piece
+
+    // Example FEN for starting position
+    private string fenString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+    protected override void OnInitialized()
+    {
+        InitializeBoardFromFEN(fenString);
+    }
+
+    private void InitializeBoardFromFEN(string fen)
+    {
+        // Reset the board
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                chessPieces[i, j] = null;
+            }
+        }
+
+        // Parse the FEN string
+        var ranks = fen.Split(' ')[0].Split('/');
+        for (int rank = 0; rank < ranks.Length; rank++)
+        {
+            var file = 0;
+            foreach (var symbol in ranks[rank])
+            {
+                if (char.IsDigit(symbol))
+                {
+                    file += int.Parse(symbol.ToString());
+                }
+                else
+                {
+                    var piece = PieceFromFEN(symbol);
+                    if (piece != null)
+                    {
+                        chessPieces[7 - rank, file] = piece;
+                        file++;
+                    }
+                }
+            }
+        }
+    }
+
+    private string PieceFromFEN(char fenChar)
+    {
+        switch (fenChar)
+        {
+            case 'p': return "black-pawn";
+            case 'r': return "black-rook";
+            case 'n': return "black-knight";
+            case 'b': return "black-bishop";
+            case 'q': return "black-queen";
+            case 'k': return "black-king";
+            case 'P': return "white-pawn";
+            case 'R': return "white-rook";
+            case 'N': return "white-knight";
+            case 'B': return "white-bishop";
+            case 'Q': return "white-queen";
+            case 'K': return "white-king";
+            default: return null; // Invalid piece
+        }
+    
+       }
+       
+
+
+
+
+private void HandleClick(int row, int col)
+{
+    Console.WriteLine($"Clicked on row {row}, column {col}");
+    bool cellHasPiece = chessPieces[row, col] != null;
+
+    if (!isPieceSelected)
+    {
+        // Select a piece if it is on the clicked square and no piece was previously selected
+        if (cellHasPiece)
+        {
+            Console.WriteLine("Selecting piece");
+            isPieceSelected = true;
+            selectedPiece = (row, col);
+        }
+    }
+    else // A piece is already selected
+    {
+        // Clicking the same piece again will deselect it
+        if (selectedPiece.row == row && selectedPiece.col == col)
+        {
+            Console.WriteLine("Deselecting piece");
+            isPieceSelected = false;
+            selectedPiece = (-1, -1);
+        }
+        // Check if the move is legal and if the destination square is not occupied by an ally
+        else if (IsMoveLegal(selectedPiece.row, selectedPiece.col, row, col) && 
+                 !(cellHasPiece && ArePiecesAllies(selectedPiece.row, selectedPiece.col, row, col)))
+        {
+            Console.WriteLine($"Executing move or capture from ({selectedPiece.row}, {selectedPiece.col}) to ({row}, {col})");
+            MovePiece(selectedPiece.row, selectedPiece.col, row, col);
+            isPieceSelected = false; // Deselect after moving or capturing
+        }
+        // If a friendly piece is clicked, switch selection to that piece
+        else if (cellHasPiece && ArePiecesAllies(selectedPiece.row, selectedPiece.col, row, col))
+        {
+            Console.WriteLine("Switching selection to another friendly piece");
+            selectedPiece = (row, col);
+        }
+        // If the move is not legal, log the attempt and do not change the selection
+        else
+        {
+            Console.WriteLine("Illegal move attempted, selection remains unchanged");
+        }
+    }
+}
+
+
+private bool ArePiecesAllies(int fromRow, int fromCol, int toRow, int toCol)
+{
+    if (chessPieces[fromRow, fromCol] == null || chessPieces[toRow, toCol] == null) return false;
+    // Check if both pieces belong to the same player (e.g., both start with "white-" or "black-")
+    return chessPieces[fromRow, fromCol].StartsWith("white-") == chessPieces[toRow, toCol].StartsWith("white-") ||
+           chessPieces[fromRow, fromCol].StartsWith("black-") == chessPieces[toRow, toCol].StartsWith("black-");
+}
+
+private bool IsMoveLegal(int fromRow, int fromCol, int toRow, int toCol)
+{
+    string piece = chessPieces[fromRow, fromCol];
+    string toPiece = chessPieces[toRow, toCol];
+    if (piece == null) return false; // No piece to move
+ if (toPiece != null && ArePiecesAllies(fromRow, fromCol, toRow, toCol))
+    {
+        return false;
+    }
+    int rowDiff = toRow - fromRow;
+    int colDiff = toCol - fromCol;
+    
+    switch (piece)
+    {
+        // Inside the IsMoveLegal method
+case var p when p.EndsWith("pawn"):
+             int direction = piece.StartsWith("white-") ? 1 : -1;
+    // Determine starting row based on color
+    // For white it's 1 (top of the board), for black it's 6 (bottom of the board)
+    bool isStartingRow = (piece.StartsWith("white-") && fromRow == 1) || (piece.StartsWith("black-") && fromRow == 6);
+
+    // Single square move forward
+    bool isSingleMoveAllowed = colDiff == 0 && rowDiff == direction && chessPieces[toRow, toCol] == null;
+
+    // Double square move from starting position
+    bool isDoubleMoveAllowed = isStartingRow && colDiff == 0 && (rowDiff == 2 * direction) &&
+                               chessPieces[toRow, toCol] == null && chessPieces[fromRow + direction, fromCol] == null;
+
+    // Capture move
+    bool isCaptureMoveAllowed = Math.Abs(colDiff) == 1 && rowDiff == direction &&
+                                chessPieces[toRow, toCol] != null && !ArePiecesAllies(fromRow, fromCol, toRow, toCol);
+
+    return isSingleMoveAllowed || isDoubleMoveAllowed || isCaptureMoveAllowed;
+
+
+        case "white-knight":
+        case "black-knight":
+            // L-shape move
+            if ((Math.Abs(rowDiff) == 2 && Math.Abs(colDiff) == 1) || (Math.Abs(rowDiff) == 1 && Math.Abs(colDiff) == 2)) return true;
+            break;
+
+        case "white-bishop":
+        case "black-bishop":
+            // Diagonal move
+            if (Math.Abs(rowDiff) == Math.Abs(colDiff)) return IsPathClear(fromRow, fromCol, toRow, toCol);
+            break;
+
+        case "white-rook":
+        case "black-rook":
+            // Horizontal or vertical move
+            if ((rowDiff == 0 || colDiff == 0) && IsPathClear(fromRow, fromCol, toRow, toCol)) return true;
+            break;
+
+        case "white-queen":
+        case "black-queen":
+            // Diagonal, horizontal, or vertical move
+            if ((Math.Abs(rowDiff) == Math.Abs(colDiff)) || rowDiff == 0 || colDiff == 0) return IsPathClear(fromRow, fromCol, toRow, toCol);
+            break;
+
+        case "white-king":
+        case "black-king":
+            // Single square move in any direction
+            if (Math.Abs(rowDiff) <= 1 && Math.Abs(colDiff) <= 1) return true;
+            break;
+    }
+
+    return false; // If none of the conditions are met, the move is illegal
+}
+
+private bool IsPathClear(int fromRow, int fromCol, int toRow, int toCol)
+{
+    int rowDirection = toRow > fromRow ? 1 : (toRow < fromRow ? -1 : 0);
+    int colDirection = toCol > fromCol ? 1 : (toCol < fromCol ? -1 : 0);
+
+    int currentRow = fromRow + rowDirection;
+    int currentCol = fromCol + colDirection;
+
+    while (currentRow != toRow || currentCol != toCol)
+    {
+        if (chessPieces[currentRow, currentCol] != null) return false; // Path is blocked
+
+        currentRow += rowDirection;
+        currentCol += colDirection;
+    }
+
+    return true; // Path is clear
+}
+
+
+    private void MovePiece(int fromRow, int fromCol, int toRow, int toCol)
+    {
+       
+        chessPieces[toRow, toCol] = chessPieces[fromRow, fromCol];
+        chessPieces[fromRow, fromCol] = null;
+
+        // Trigger UI refresh
+        StateHasChanged();
+    }
+    private string GetCellColor(int row, int col)
+    {
+      
+        return (row + col) % 2 == 0 ? "light-cell" : "dark-cell";
+    }
+
+    private string GetPiece(int row, int col)
+    {
+        
+        return chessPieces[row, col];
+    }
+
+    private string GetClasses(int row, int col)
+    {
+        var classes = $"chessboard-cell {GetCellColor(row, col)}";
+        if (!string.IsNullOrEmpty(chessPieces[row, col]))
+        {
+            classes += $" {chessPieces[row, col]} chess-piece";
+        }
+        if (isPieceSelected && selectedPiece.row == row && selectedPiece.col == col)
+        {
+            classes += " selected"; // Add the 'selected' class if the cell is selected
+        }
+        return classes;
+    }
+}

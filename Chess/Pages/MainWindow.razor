@@ -1,0 +1,157 @@
+﻿@page "/NormalChess"
+@using Chesslogic
+<style>
+.chess-board {
+    background-image: url('Assets/Board.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 50%; 
+    margin-left: auto;
+    margin-right: auto;
+    display: block; 
+    position: relative;
+    padding-top: 50%; 
+}
+.darkened-square {
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+.chess-row {
+    width: 100%;
+    position: absolute; 
+}
+.potential-move {
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+.chess-square {
+    width: 12.5%; 
+    height: 100%; 
+    float: left; 
+    position: relative; 
+}
+
+.chess-piece {
+    width: 100%; 
+    height: auto; 
+    
+    
+}
+
+.highlighted-square {
+    outline: 2px solid yellow; 
+    outline-offset: -2px;
+}
+
+</style>
+<div class="chess-board" style="background-image: url('Assets/Board.png');">
+    @for (int row = 0; row < 8; row++)
+{
+    int localRow = row; 
+    <div class="chess-row" style="top: @(localRow * 12.5)%; height: 12.5%;">
+        @for (int col = 0; col < 8; col++)
+        {
+            int localCol = col; 
+            <div class="chess-square @(GetSquareClass(localRow, localCol))"
+                 @onclick="() => HandleClick(new Position(localRow, localCol))">
+                 @if (board[localRow, localCol] != null)
+                 {
+                     <img class="chess-piece" src="@GetPieceImage(localRow, localCol)" alt="Chess Piece">
+                 }
+            </div>
+        }
+    </div>
+}
+</div>
+
+
+
+
+@code {
+     private Game gameState;
+    private Board board;
+   private List<Position> potentialMoves = new List<Position>();
+
+
+    
+    protected override void OnInitialized()
+    {
+        gameState = new Game(Player.White, Board.Initialize());
+        board = gameState.Board; 
+    }
+
+
+private Position selectedPosition;
+private bool isPositionSelected = false; 
+private void HandleClick(Position pos)
+{
+    if (!isPositionSelected)
+    {
+        if (!board.isEmpty(pos) && board[pos].Color == gameState.Current)
+        {
+            selectedPosition = pos;
+            isPositionSelected = true;
+            potentialMoves = gameState.LegalMoves(selectedPosition).Select(m => m.ToPosition).ToList(); 
+            Console.WriteLine($"Piece selected at {pos.Row}, {pos.Column}");
+        }
+    }
+    else
+    {
+        if (selectedPosition.Equals(pos))
+        {
+            isPositionSelected = false;
+            potentialMoves.Clear();
+            Console.WriteLine("Deselecting piece.");
+        }
+        else
+        {
+            var move = potentialMoves.FirstOrDefault(m => m.Equals(pos));
+            if (move != null)
+            {
+                Console.WriteLine($"Executing move to {pos.Row}, {pos.Column}");
+                gameState.MakeMove(new normalMove(selectedPosition, pos)); 
+                isPositionSelected = false;
+                potentialMoves.Clear();
+            }
+            else
+            {
+                Console.WriteLine("Move invalid or not found.");
+                
+            }
+        }
+    }
+    StateHasChanged();  
+}
+
+
+private string GetSquareClass(int row, int col)
+{
+    Position currentPos = new Position(row, col);
+    if (isPositionSelected && selectedPosition.Row == row && selectedPosition.Column == col)
+    {
+        return "highlighted darkened-square";
+    }
+    else if (isPositionSelected && potentialMoves.Any(p => p.Equals(currentPos)))
+    {
+        return "potential-move";
+    }
+    return "";
+}
+
+
+
+
+
+    private string GetPieceImage(int row, int col)
+{
+    var piece = board[row, col];
+    if (piece == null)
+    {
+        return string.Empty; 
+    }
+
+    
+    var imagePath = Images.GetImage(piece); 
+    return imagePath;
+}
+}
+
+
