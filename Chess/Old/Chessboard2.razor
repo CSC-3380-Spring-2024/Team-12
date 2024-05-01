@@ -1,0 +1,48 @@
+@page "/Chessboard3"
+@using Chesslogic
+
+<div class="chessboard">
+    @for (int row = 0; row < 8; row++)
+    {
+        <div class="chessboard-row">
+            @for (int col = 0; col < 8; col++)
+            {
+                var localRow = row;
+                var localCol = col;
+                <div class="@GetCellColor(row, col)" @onclick="() => HandleClick(localRow, localCol)">
+                    @if (GetPieceImage(GameState.Board[localRow, localCol]) != null)
+                    {
+                        <img src="@GetPieceImage(GameState.Board[localRow, localCol])" alt="Chess piece">
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private Game GameState;
+
+    protected override void OnInitialized()
+    {
+        GameState = new Game(Player.White, Board.Initialize());
+    }
+
+    private string GetPieceImage(Piece piece)
+    {
+        // Assume Images.GetImage returns a path to the image
+        return piece != null ? Images.GetImage(piece) : null;
+    }
+
+    private string GetCellColor(int row, int col)
+    {
+        return (row + col) % 2 == 0 ? "white-cell" : "black-cell";
+    }
+
+    private void HandleClick(int row, int col)
+    {
+        // Implement click logic here, possibly to select a piece and move it
+        Console.WriteLine($"Clicked on row {row}, column {col}");
+        // You can add more logic here to handle piece selection, movement, etc.
+    }
+}
