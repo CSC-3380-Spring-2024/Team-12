@@ -101,7 +101,7 @@ private void HandleClick(Position pos)
             potentialMoves.Clear();
             Console.WriteLine("Deselecting piece.");
         }
-        else
+        else if (potentialMoves.Contains(pos)) 
         {
             var move = potentialMoves.FirstOrDefault(m => m.Equals(pos));
             if (move != null)
