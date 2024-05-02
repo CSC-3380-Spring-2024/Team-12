@@ -22,7 +22,7 @@ namespace Chesslogic
             Piece piece = Board[pos];
             return piece.GetMoves(pos, Board);
         }
-        public void MakeMove(Moves move)
+        public virtual void MakeMove(Moves move)
         {
             move.Execute(Board);
             Current = Current.Oppponent();
