@@ -137,13 +137,20 @@ private void HandleClick(Position pos)
 
 private void AtomicExplosion(Position pos)
 {
+   
     for (int i = -1; i <= 1; i++)
     {
         for (int j = -1; j <= 1; j++)
         {
-            if (pos.Row + i >= 0 && pos.Row + i < 8 && pos.Column + j >= 0 && pos.Column + j < 8)
+            int newRow = pos.Row + i;
+            int newCol = pos.Column + j;
+            if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) 
             {
-                board[pos.Row + i, pos.Column + j] = null; // Clear the square
+                var affectedPiece = board[newRow, newCol];
+                if (affectedPiece != null && affectedPiece.Type != PieceType.King) 
+                {
+                    board[newRow, newCol] = null; 
+                }
             }
         }
     }
