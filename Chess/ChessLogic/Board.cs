@@ -4,7 +4,7 @@ namespace Chesslogic
 {
     public class Board
     {
-        private readonly Piece[,] pieces = new Piece[8, 8];
+        public readonly Piece[,] pieces = new Piece[8, 8];
        
         public Piece this[int row, int col]
 {
