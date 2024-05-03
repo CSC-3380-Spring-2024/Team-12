@@ -27,13 +27,13 @@ git clone https://github.com/CSC-3380-Spring-2024/Team-12
 
 Change into the project directory:
 
-cd chess
+    $ cd chess
 
 3. **Install Dependencies**
 
 To install all necessary dependencies, use the following command:
 
-dotnet restore
+    $ dotnet restore
 
 This command will download and install all the required NuGet packages for the project.
 
@@ -41,10 +41,10 @@ This command will download and install all the required NuGet packages for the p
 
 Build the project to ensure all dependencies are correctly set up:
 
-dotnet build
+    $ dotnet build
 
 5. **Run the Application**
 
 Finally, run the application:
 
-dotnet run
+    $ dotnet run
