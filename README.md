@@ -27,7 +27,7 @@ git clone https://github.com/CSC-3380-Spring-2024/Team-12
 
 Change into the project directory:
 
-    $cd chess
+    $ cd chess
 
 3. **Install Dependencies**
 
