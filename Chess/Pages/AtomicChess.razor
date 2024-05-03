@@ -97,7 +97,7 @@ private void HandleClick(Position pos)
         {
             selectedPosition = pos;
             isPositionSelected = true;
-            potentialMoves = gameState.LegalMoves(selectedPosition).Select(m => m.ToPosition).ToList(); 
+            potentialMoves = gameState.LegalMoves(selectedPosition).Select(m => m.ToPosition).ToList();
             Console.WriteLine($"Piece selected at {pos.Row}, {pos.Column}");
         }
     }
@@ -109,20 +109,18 @@ private void HandleClick(Position pos)
             potentialMoves.Clear();
             Console.WriteLine("Deselecting piece.");
         }
-         else if (potentialMoves.Contains(pos)) 
+        else if (potentialMoves.Contains(pos))
         {
             var move = potentialMoves.FirstOrDefault(m => m.Equals(pos));
-            if (move != null && board[pos] != null) // Check if a capture move
-            {
-                Console.WriteLine($"Atomic explosion triggered at {pos.Row}, {pos.Column}");
-                AtomicExplosion(pos);
-                isPositionSelected = false;
-                potentialMoves.Clear();
-            }
-            else if (move != null)
+            if (move != null)
             {
                 Console.WriteLine($"Executing move to {pos.Row}, {pos.Column}");
-                gameState.MakeMove(new normalMove(selectedPosition, pos)); 
+                gameState.MakeMove(new normalMove(selectedPosition, pos));
+                if (board[pos] != null) // Check if a capture move
+                {
+                    Console.WriteLine($"Atomic explosion triggered at {pos.Row}, {pos.Column}");
+                    AtomicExplosion(pos);
+                }
                 isPositionSelected = false;
                 potentialMoves.Clear();
             }
@@ -132,24 +130,25 @@ private void HandleClick(Position pos)
             }
         }
     }
-    StateHasChanged();  
+    StateHasChanged();
 }
 
 private void AtomicExplosion(Position pos)
 {
-   
+    Player currentPlayer = board[pos].Color;
+
     for (int i = -1; i <= 1; i++)
     {
         for (int j = -1; j <= 1; j++)
         {
             int newRow = pos.Row + i;
             int newCol = pos.Column + j;
-            if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) 
+            if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
             {
                 var affectedPiece = board[newRow, newCol];
-                if (affectedPiece != null && affectedPiece.Type != PieceType.King) 
+                if (affectedPiece != null && affectedPiece.Type != PieceType.King && affectedPiece.Color != currentPlayer)
                 {
-                    board[newRow, newCol] = null; 
+                    board[newRow, newCol] = null;
                 }
             }
         }
