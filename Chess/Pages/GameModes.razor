@@ -52,9 +52,9 @@
         transition: transform 0.1s ease;    
     }
     .AtomicChess,
-    .HexChess,
+    .HordeMode,
     .CardChess,
-    .TBD {
+    .FogOfWar {
         width: 30vw;
         height: 10vh;
         color: white;
@@ -95,14 +95,14 @@
 <div class="GameModeCircle1" @onclick="NavigateToAtomicChess">
     <div class="AtomicChess">Atomic Chess<br/></div>
     </div>
-<div class="GameModeCircle2" @onclick="NavigateToHexChess">
-    <div class="HexChess">Horde Mode<br/></div>   
+<div class="GameModeCircle2" @onclick="NavigateToHordeMode">
+    <div class="HordeMode">Horde Mode<br/></div>   
     </div>
 <div class="GameModeCircle3" @onclick="NavigateToCardChess">
     <div class="CardChess">Card Chess<br/></div>
     </div>
-<div class="GameModeCircle4" @onclick="NavigateToTBD">
-    <div class="TBD">TBD<br/></div>
+<div class="GameModeCircle4" @onclick="NavigateToFogOfWar">
+    <div class="FogOfWar">FogOfWar<br/></div>
     </div>
 
 @code {
@@ -111,7 +111,7 @@
         NavManager.NavigateTo("AtomicChess");
         
     }
-    private void NavigateToHexChess()
+    private void NavigateToHordeMode()
     {
        
         NavManager.NavigateTo("HordeMode");
@@ -123,10 +123,10 @@
         NavManager.NavigateTo("CardChess");
 
     }
-    private void NavigateToTBD()
+    private void NavigateToFogOfWar()
     {
        
-        NavManager.NavigateTo("TBD");
+        NavManager.NavigateTo("FogOfWar");
 
     }
 }
