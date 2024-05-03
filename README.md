@@ -20,7 +20,7 @@ Before you begin, ensure you have the .NET SDK installed on your machine. If you
 
 Clone the repository to your local machine:
 
-git clone https://github.com/CSC-3380-Spring-2024/Team-12
+    $ git clone https://github.com/CSC-3380-Spring-2024/Team-12
 
 2. **Navigate to the Project Directory**
 
