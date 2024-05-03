@@ -1,6 +1,12 @@
-﻿@page "/NormalChess"
+@page "/HordeMode"
 @using Chesslogic
+
 <style>
+     body {
+        background-color: #B5C4B5;
+        
+       
+    }
 .chess-board {
     background-image: url('Assets/Board.png');
     background-size: contain;
@@ -45,22 +51,22 @@
 
 <div class="chess-board" style="background-image: url('Assets/Board.png');">
     @for (int row = 0; row < 8; row++)
-{
-    int localRow = row; 
-    <div class="chess-row" style="top: @(localRow * 12.5)%; height: 12.5%;">
-        @for (int col = 0; col < 8; col++)
-        {
-            int localCol = col; 
-            <div class="chess-square @(GetSquareClass(localRow, localCol))"
-                 @onclick="() => HandleClick(new Position(localRow, localCol))">
-                 @if (board[localRow, localCol] != null)
-                 {
-                     <img class="chess-piece" src="@GetPieceImage(localRow, localCol)" alt="Chess Piece">
-                 }
-            </div>
-        }
-    </div>
-}
+    {
+        int localRow = row; 
+        <div class="chess-row" style="top: @(localRow * 12.5)%; height: 12.5%;">
+            @for (int col = 0; col < 8; col++)
+            {
+                int localCol = col; 
+                <div class="chess-square @(GetSquareClass(localRow, localCol))"
+                     @onclick="() => HandleClick(new Position(localRow, localCol))">
+                     @if (board[localRow, localCol] != null)
+                     {
+                         <img class="chess-piece" src="@GetPieceImage(localRow, localCol)" alt="Chess Piece">
+                     }
+                </div>
+            }
+        </div>
+    }
 </div>
 
 
@@ -76,8 +82,8 @@ private bool isPositionSelected = false;
     
     protected override void OnInitialized()
     {
-        gameState = new Game(Player.White, Board.Initialize());
-        board = gameState.Board; 
+         board = HordeBoard.InitializeHordeMode();
+        gameState = new Game(Player.White, board);
     }
 
 
