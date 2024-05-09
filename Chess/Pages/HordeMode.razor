@@ -43,122 +43,55 @@
 }
 
 .highlighted-square {
-    outline: 2px solid yellow; 
-    outline-offset: -2px;
+    background-color: rgba(0, 0, 0, 0.7); 
 }
 
 </style>
-
 <div class="chess-board" style="background-image: url('Assets/Board.png');">
     @for (int row = 0; row < 8; row++)
     {
-        int localRow = row; 
+        int localRow = row; // Local copy of row to capture correctly in lambda expressions
         <div class="chess-row" style="top: @(localRow * 12.5)%; height: 12.5%;">
             @for (int col = 0; col < 8; col++)
             {
-                int localCol = col; 
-                <div class="chess-square @(GetSquareClass(localRow, localCol))"
-                     @onclick="() => HandleClick(new Position(localRow, localCol))">
-                     @if (board[localRow, localCol] != null)
+                int localCol = col; // Local copy of col to capture correctly in lambda expressions
+                <div class="chess-square @(controller.GetSquareClass(localRow, localCol))"
+                     @onclick="() => controller.HandleClick(new Position(localRow, localCol))">
+                     @if (controller.CurrentGame.Board[new Position(localRow, localCol)] != null)
                      {
-                         <img class="chess-piece" src="@GetPieceImage(localRow, localCol)" alt="Chess Piece">
+                         <img class="chess-piece" src="@controller.GetPieceImage(controller.CurrentGame.Board[new Position(localRow, localCol)])" alt="Chess Piece" />
                      }
                 </div>
             }
         </div>
     }
 </div>
-
-
-
-
 @code {
-    private Game gameState;
-    private Board board;
-   private List<Position> potentialMoves = new List<Position>();
-private Position selectedPosition;
-private bool isPositionSelected = false; 
+    private ChessGameController controller;
 
     
+
     protected override void OnInitialized()
     {
-         board = HordeBoard.InitializeHordeMode();
-        gameState = new Game(Player.White, board);
+       
+        var board = HordeBoard.InitializeHordeMode(); 
+
+       
+        var hordeGame = new HordeChessGame(board);
+
+        
+        controller = new ChessGameController(hordeGame);
+
+       
+        controller.OnUpdateRequested += UpdateComponentState;
     }
-
-
-
-private void HandleClick(Position pos)
-{
-    if (!isPositionSelected)
+    private void UpdateComponentState()
     {
-        if (!board.isEmpty(pos) && board[pos].Color == gameState.Current)
-        {
-            selectedPosition = pos;
-            isPositionSelected = true;
-            potentialMoves = gameState.LegalMoves(selectedPosition).Select(m => m.ToPosition).ToList(); 
-            Console.WriteLine($"Piece selected at {pos.Row}, {pos.Column}");
-        }
+        InvokeAsync(StateHasChanged); 
     }
-    else
+
+    public void Dispose() 
     {
-        if (selectedPosition.Equals(pos))
-        {
-            isPositionSelected = false;
-            potentialMoves.Clear();
-            Console.WriteLine("Deselecting piece.");
-        }
-        else if (potentialMoves.Contains(pos)) 
-        {
-            var move = potentialMoves.FirstOrDefault(m => m.Equals(pos));
-            if (move != null)
-            {
-                Console.WriteLine($"Executing move to {pos.Row}, {pos.Column}");
-                gameState.MakeMove(new normalMove(selectedPosition, pos)); 
-                isPositionSelected = false;
-                potentialMoves.Clear();
-            }
-            else
-            {
-                Console.WriteLine("Move invalid or not found.");
-                
-            }
-        }
+        controller.OnUpdateRequested -= UpdateComponentState; 
     }
-    StateHasChanged();  
 }
-
-
-private string GetSquareClass(int row, int col)
-{
-    Position currentPos = new Position(row, col);
-    if (isPositionSelected && selectedPosition.Row == row && selectedPosition.Column == col)
-    {
-        return "highlighted darkened-square";
-    }
-    else if (isPositionSelected && potentialMoves.Any(p => p.Equals(currentPos)))
-    {
-        return "potential-move";
-    }
-    return "";
-}
-
-
-
-
-
-    private string GetPieceImage(int row, int col)
-{
-    var piece = board[row, col];
-    if (piece == null)
-    {
-        return string.Empty; 
-    }
-
-    
-    var imagePath = Images.GetImage(piece); 
-    return imagePath;
-}
-}
-
-

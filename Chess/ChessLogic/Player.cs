@@ -1,5 +1,4 @@
-﻿
-namespace Chesslogic
+﻿namespace Chesslogic
 {
     public enum Player
     {
@@ -10,7 +9,8 @@ namespace Chesslogic
 
     public static class ExtendPlayer
     {
-        public static Player Oppponent(this Player player)
+        
+        public static Player Opponent(this Player player)
         {
             switch (player)
             {

@@ -6,6 +6,8 @@ namespace Chesslogic
     {
         public override PieceType Type => PieceType.King;
         public override Player Color { get; }
+        public int Row { get; }
+        public int Column { get; }
         public bool HasMoved { get; set; } = false;
 
         private static readonly PositionDirection[] dirs = new PositionDirection[]
@@ -34,9 +36,23 @@ namespace Chesslogic
         public King(int row, int col, Player color)
         {
             this.row = row;
-            this.col = col;
+            this.Column = col;
             Color = color;
         }
+       public override bool CanMoveTo(Position position, Board board)
+{
+    int rowDiff = Math.Abs(position.Row - this.Row);
+    int colDiff = Math.Abs(position.Column - this.Column);
+    bool withinMoveRange = rowDiff <= 1 && colDiff <= 1 && (rowDiff > 0 || colDiff > 0);
+
+    if (!withinMoveRange)
+        return false;
+
+
+    Piece pieceAtPosition = board[position];
+    return pieceAtPosition == null || pieceAtPosition.Color != this.Color;
+}
+
         private IEnumerable<Position> MovePositions(Position from, Board board)
         {
             foreach(PositionDirection dir in dirs)
@@ -57,7 +73,7 @@ namespace Chesslogic
 {
     foreach(Position to in MovePositions(from, board))
     {
-        yield return new normalMove(from, to);  // Corrected from 'from + to' to just 'to'
+        yield return new NormalMove(from, to);  
     }
 }
     }

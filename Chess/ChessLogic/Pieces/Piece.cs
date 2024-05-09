@@ -1,7 +1,7 @@
 ﻿
 
 namespace Chesslogic
-{   //Abstract because all pieces will inherit from this class
+{   
     public abstract class Piece
     {
         public int row;
@@ -10,8 +10,11 @@ namespace Chesslogic
         public abstract Player Color { get; }
         public bool HasMoved { get; set; } = false;
         public abstract Piece Copy();
-        public abstract IEnumerable<Moves> GetMoves(Position from, Board board);
+        public abstract bool CanMoveTo(Position position, Board board);
+    public abstract IEnumerable<Moves> GetMoves(Position from, Board board);
 
+        
+   
         protected IEnumerable<Position> MovePositionInDir(Position from, Board board, PositionDirection dir)
         {
             for (Position pos = from + dir; Board.IsInBounds(pos); pos += dir)
