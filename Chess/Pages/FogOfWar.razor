@@ -53,29 +53,25 @@
     }
 
 .highlighted-square {
-    
+    background-color: rgba(0, 0, 0, 0.7); /* Yellow semi-transparent overlay */
 }
-
 </style>
-
-<div class="chess-board">
+<div class="chess-board" style="background-image: url('Assets/Board.png');">
     @for (int row = 0; row < 8; row++)
     {
-        int localRow = row;
+        int localRow = row; // Local copy of row to capture correctly in lambda expressions
         <div class="chess-row" style="top: @(localRow * 12.5)%; height: 12.5%;">
             @for (int col = 0; col < 8; col++)
             {
-                int localCol = col;
-                <div class="chess-square @(GetSquareClass(localRow, localCol))"
-                     @onclick="() => HandleClick(new Position(localRow, localCol))">
-                     @if (IsVisible(localRow, localCol))
+                int localCol = col; // Local copy of col to capture correctly in lambda expressions
+                var pos = new Position(localRow, localCol);
+                <div class="chess-square @(controller.GetSquareClass(localRow, localCol))"
+                     @onclick="() => controller.HandleClick(pos)">
+                     @if (controller.CurrentGame.Board[pos] != null && controller.CurrentGame.IsVisible(pos))
                      {
-                         @if (board[localRow, localCol] != null)
-                         {
-                             <img class="chess-piece" src="@GetPieceImage(localRow, localCol)" alt="Chess Piece">
-                         }
+                         <img class="chess-piece" src="@controller.GetPieceImage(controller.CurrentGame.Board[pos])" alt="Chess Piece" />
                      }
-                     else
+                     else if (!controller.CurrentGame.IsVisible(pos))
                      {
                          <div class="fog-of-war"></div>
                      }
@@ -85,128 +81,26 @@
     }
 </div>
 
+
 @code {
-    private Game gameState;
-    private Board board;
-    private List<Position> potentialMoves = new List<Position>();
-    private Position selectedPosition;
-    private bool isPositionSelected = false;
-    private bool[,] visibilityGrid;
+    private ChessGameController controller;
 
     protected override void OnInitialized()
     {
-        gameState = new Game(Player.White, Board.Initialize());
-        board = gameState.Board;
-        visibilityGrid = new bool[8, 8];
-        UpdateVisibility();
+        var board = Board.InitializeStandard(); 
+        var fogOfWarGame = new FogOfWarChessGame(board);  
+        controller = new ChessGameController(fogOfWarGame);
+
+        controller.OnUpdateRequested += UpdateComponentState; 
     }
 
-    private void HandleClick(Position pos)
+    private void UpdateComponentState()
     {
-        if (!isPositionSelected)
-        {
-            if (!board.isEmpty(pos) && board[pos].Color == gameState.Current)
-            {
-                selectedPosition = pos;
-                isPositionSelected = true;
-                potentialMoves = gameState.LegalMoves(selectedPosition).Select(m => m.ToPosition).ToList();
-            }
-        }
-        else
-        {
-            if (selectedPosition.Equals(pos))
-            {
-                DeselectPiece();
-            }
-            else if (potentialMoves.Contains(pos))
-            {
-                ExecuteMove(pos);
-            }
-        }
+        InvokeAsync(StateHasChanged);  
     }
 
-    private void ExecuteMove(Position pos)
+    public void Dispose()
     {
-        gameState.MakeMove(new normalMove(selectedPosition, pos));
-        DeselectPiece();
-        UpdateVisibility();  // Ensure visibility is recalculated after each move
-    }
-
-    private void DeselectPiece()
-    {
-        isPositionSelected = false;
-        potentialMoves.Clear();
-    }
-
-    private void UpdateVisibility()
-    {
-        // Reset visibility grid
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                visibilityGrid[i, j] = false; // No square is visible by default
-            }
-        }
-
-        // Update visibility based on the position of each piece
-        for (int row = 0; row < 8; row++)
-        {
-            for (int col = 0; col < 8; col++)
-            {
-                var piece = board[row, col];
-                if (piece != null && piece.Color == gameState.Current)
-                {
-                    // Set visibility for the piece's position
-                    SetVisibilityForPiece(row, col);
-                }
-            }
-        }
-
-        StateHasChanged();  // Notify Blazor to re-render the UI
-    }
-
-    private void SetVisibilityForPiece(int row, int col)
-    {
-        // Assuming each piece can see 1 square in all directions
-        for (int i = -1; i <= 1; i++)
-        {
-            for (int j = -1; j <= 1; j++)
-            {
-                int newRow = row + i;
-                int newCol = col + j;
-                if (IsWithinBounds(newRow, newCol))
-                {
-                    visibilityGrid[newRow, newCol] = true;
-                }
-            }
-        }
-    }
-
-    private bool IsWithinBounds(int row, int col)
-    {
-        return row >= 0 && row < 8 && col >= 0 && col < 8;
-    }
-
-    private bool IsVisible(int row, int col)
-    {
-        return visibilityGrid[row, col];  // Return visibility from the grid
-    }
-
-
-    private string GetSquareClass(int row, int col)
-    {
-        Position currentPos = new Position(row, col);
-        if (isPositionSelected && selectedPosition.Equals(currentPos))
-            return "highlighted-square";
-        if (potentialMoves.Contains(currentPos))
-            return "potential-move";
-        return "";
-    }
-
-    private string GetPieceImage(int row, int col)
-    {
-        var piece = board[row, col];
-        return piece != null ? Images.GetImage(piece) : string.Empty;
+        controller.OnUpdateRequested -= UpdateComponentState;  
     }
 }

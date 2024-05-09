@@ -1,5 +1,4 @@
-﻿
-namespace Chesslogic
+﻿namespace Chesslogic
 {
     public class PositionDirection
     {
@@ -12,7 +11,7 @@ namespace Chesslogic
         public readonly static PositionDirection DownLeft = Down + Left;
         public readonly static PositionDirection DownRight = Down + Right;
 
-        public int RowChange { get; }
+        public int RowChange { get; }  
         public int ColumnChange { get; }
 
         public PositionDirection(int rowChange, int columnChange)
@@ -21,13 +20,15 @@ namespace Chesslogic
             ColumnChange = columnChange;
         }
 
+
         public static PositionDirection operator +(PositionDirection dir1, PositionDirection dir2)
         {
             return new PositionDirection(dir1.RowChange + dir2.RowChange, dir1.ColumnChange + dir2.ColumnChange);
         }
-        public static PositionDirection operator *(int scale, PositionDirection dir)
+
+        public static PositionDirection operator *(int scale, PositionDirection direction)
         {
-            return new PositionDirection(scale * dir.RowChange, scale * dir.ColumnChange);
+            return new PositionDirection(scale * direction.RowChange, scale * direction.ColumnChange);
         }
     }
 }

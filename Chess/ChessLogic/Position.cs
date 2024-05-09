@@ -1,6 +1,6 @@
 ﻿namespace Chesslogic
 {
-    public struct Position
+    public class Position
     {
         public int Row { get; }
         public int Column { get; }
@@ -10,11 +10,28 @@
             Row = row;
             Column = column;
         }
+        public bool IsWithinBoardBounds()
+        {
+            return Row >= 0 && Row < 8 && Column >= 0 && Column < 8;
+        }
 
-        public static Position operator +(Position position, PositionDirection direction)
+        
+        public bool IsValid()
+        {
+            return IsWithinBoardBounds();
+        }
+        public static bool IsValid(int row, int column)
+    {
+        return row >= 0 && row < 8 && column >= 0 && column < 8;
+    }
+
+        public static Position operator +(Position position, PositionDirection direction) 
         {
             return new Position(position.Row + direction.RowChange, position.Column + direction.ColumnChange);
         }
+        public static Position operator +(Position a, Position b) {
+    return new Position(a.Row + b.Row, a.Column + b.Column);
+}
 
         public Player SquareColor()
         {
@@ -45,4 +62,6 @@
             return !left.Equals(right);
         }
     }
+
+   
 }

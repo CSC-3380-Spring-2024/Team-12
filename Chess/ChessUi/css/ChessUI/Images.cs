@@ -25,7 +25,7 @@ namespace Chesslogic
             { PieceType.King, "Assets/KingB.png" }
         };
 
-        // This method fetches the URL of the image
+     
         public static string GetImage(Player color, PieceType type)
         {
             return color switch
@@ -36,7 +36,7 @@ namespace Chesslogic
             };
         }
 
-        // Optional: Method to fetch image URL from a Piece object
+      
         public static string GetImage(Piece piece)
         {
             if (piece == null)

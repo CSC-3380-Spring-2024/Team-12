@@ -13,10 +13,20 @@ namespace Chesslogic
         {
             HordeBoard board = new HordeBoard();
             board.AddBasePieces();
-         // Adding extra rows for HordeMode
-            board.AddExtraPawns(); // Adding pawns at specific positions for HordeMode
+        
+            board.AddExtraPawns(); 
             return board;
         }
+         public virtual void Clear()
+    {
+        for (int row = 0; row < pieces.GetLength(0); row++)
+        {
+            for (int col = 0; col < pieces.GetLength(1); col++)
+            {
+                pieces[row, col] = null;
+            }
+        }
+    }
 
         public Piece this[int row, int col]
         {
@@ -42,8 +52,9 @@ namespace Chesslogic
 
     
 
-        public void AddBasePieces()
+        public override void AddBasePieces()
         {
+             this.Clear();
             for (int i = 0; i < 8; i++)
             {
                 this[1, i] = new Pawn(Player.Black);
@@ -59,14 +70,7 @@ namespace Chesslogic
             this[0, 6] = new Knight(Player.Black);
             this[0, 7] = new Rook(Player.Black);
 
-            this[7, 0] = new Pawn(Player.White);
-            this[7, 1] = new Pawn(Player.White);
-            this[7, 2] = new Pawn(Player.White);
-            this[7, 3] = new Pawn(Player.White);
-            this[7, 4] = new Pawn(Player.White);
-            this[7, 5] = new Pawn(Player.White);
-            this[7, 6] = new Pawn(Player.White);
-            this[7, 7] = new Pawn(Player.White);
+           
         for (int i = 0; i < 8; i++)
             {
                 this[4, i] = new Pawn(Player.White);
@@ -80,7 +84,7 @@ namespace Chesslogic
 
         public void AddExtraPawns()
         {
-            // Adding pawns at specific positions for HordeMode
+            
             this[3, 1] = new Pawn(Player.White); // b4
             this[3, 2] = new Pawn(Player.White); // c4
             this[3, 5] = new Pawn(Player.White); // f4
@@ -89,7 +93,7 @@ namespace Chesslogic
 
         public static bool IsInBounds(Position pos)
         {
-            return pos.Row >= 0 && pos.Row < 10 && pos.Column >= 0 && pos.Column < 8; // Adjusted for the extra rows
+            return pos.Row >= 0 && pos.Row < 10 && pos.Column >= 0 && pos.Column < 8; 
         }
 
         public bool isEmpty(Position pos)
