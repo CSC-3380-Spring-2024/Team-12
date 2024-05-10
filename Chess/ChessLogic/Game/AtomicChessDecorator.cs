@@ -2,14 +2,14 @@ using Chesslogic;
 
 namespace Chesslogic
 {
-    public class AtomicChessGame : Game
+    public class AtomicChessGame : GameDecorator
     {
         private Game wrappedGame;
 
-        public AtomicChessGame(Game wrappedGame, Board board) : base(board)
-        {
-            this.wrappedGame = wrappedGame ?? throw new ArgumentNullException(nameof(wrappedGame), "Wrapped game cannot be null.");
-        }
+        public AtomicChessGame(Game wrappedGame) : base(wrappedGame)
+{
+    this.wrappedGame = wrappedGame ?? throw new ArgumentNullException(nameof(wrappedGame));
+}
 
         public override void MakeMove(Moves move)
         {

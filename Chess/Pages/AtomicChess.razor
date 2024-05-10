@@ -78,7 +78,7 @@
     {
         var board = Board.InitializeStandard();
         var standardGame = new StandardChessGame(board);
-        controller = new ChessGameController(new AtomicChessGame(standardGame, board));
+        controller = new ChessGameController(new AtomicChessGame(standardGame));
 
         controller.OnUpdateRequested += UpdateComponentState;
     }
