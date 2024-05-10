@@ -1,8 +1,172 @@
 @page "/CardChess"
+@using Chesslogic
+@using System
 <style>
-    body {
-        background-color: #B5C4B5;
-        
-       
+    .chess-board {
+        background-image: url('Assets/Board.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 50%; 
+        margin-left: auto;
+        margin-right: auto;
+        display: block; 
+        position: relative;
+        padding-top: 50%; 
     }
+    .darkened-square {
+        background-color: rgba(0, 0, 0, 0.5); 
+    }
+    .chess-row {
+        width: 100%;
+        position: absolute; 
+    }
+    .potential-move {
+        background-color: rgba(0, 0, 0, 0.5); 
+    }
+    .chess-square {
+        width: 12.5%; 
+        height: 100%; 
+        float: left; 
+        position: relative; 
+    }
+    .chess-piece {
+        width: 100%; 
+        height: auto; 
+    }
+    .highlighted-square {
+    background-color: rgba(0, 0, 0, 0.7); 
+}
+    .custom-button-container {
+        text-align: center;
+    }
+    .custom-button {
+        margin: 5px;
+        display: inline-block;
+    }
+    .custom-button img {
+        width: 200px;
+        height: auto;
+    }
+    .dimmed {
+        filter: brightness(0.5);
+    }
+
+    .card-counter {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: white;
+        border: 1px solid black;
+        padding: 2px 5px;
+        border-radius: 50%;
+    }
+    }
+    
 </style>
+
+<div class="chess-board" style="background-image: url('Assets/Board.png');">
+    @for (int row = 0; row < 8; row++)
+    {
+        int localRow = row;
+        <div class="chess-row" style="top: @(localRow * 12.5)%; height: 12.5%;">
+            @for (int col = 0; col < 8; col++)
+            {
+                int localCol = col;
+                var pos = new Position(localRow, localCol);
+                <div class="chess-square @(controller.GetSquareClass(localRow, localCol))"
+                     @onclick="() => controller.HandleClick(new Position(localRow, localCol))">
+                     @if (controller.CurrentGame.Board[new Position(localRow, localCol)] != null)
+                     {
+                         <img class="chess-piece" src="@controller.GetPieceImage(controller.CurrentGame.Board[pos])" alt="Chess Piece" />
+                     }
+                    
+                </div>
+            }
+        </div>
+    }
+</div>
+<div class="custom-button-container">
+    <button class="custom-button" @onclick="() => cardGame.PlayCard(CardType.Flame)">
+        @if (cardGame.CardCounts[cardGame.CurrentPlayer].Flame > 0)
+        {
+            <img src="Assets/flameCard.png" alt="Flame Card" />
+        }
+        else
+        {
+            <img src="Assets/flameCard.png" alt="Flame Card" class="dimmed" />
+        }
+        <span class="card-counter">@cardGame.CardCounts[cardGame.CurrentPlayer].Flame</span>
+    </button>
+    <button class="custom-button" @onclick="() => cardGame.PlayCard(CardType.Freeze)">
+        @if (cardGame.CardCounts[cardGame.CurrentPlayer].Freeze > 0)
+        {
+            <img src="Assets/freezeCard.png" alt="Freeze Card" />
+        }
+        else
+        {
+            <img src="Assets/freezeCard.png" alt="Freeze Card" class="dimmed" />
+        }
+        <span class="card-counter">@cardGame.CardCounts[cardGame.CurrentPlayer].Freeze</span>
+    </button>
+    <button class="custom-button" @onclick="() => cardGame.PlayCard(CardType.Possess)">
+        @if (cardGame.CardCounts[cardGame.CurrentPlayer].Possess > 0)
+        {
+            <img src="Assets/PossessCard.png" alt="Possess Card" />
+        }
+        else
+        {
+            <img src="Assets/PossessCard.png" alt="Possess Card" class="dimmed" />
+        }
+        <span class="card-counter">@cardGame.CardCounts[cardGame.CurrentPlayer].Possess</span>
+    </button>
+</div>
+
+@code {
+    private CardGame cardGame;
+    private ChessGameController controller;
+
+    protected override void OnInitialized()
+    {
+        var board = Board.InitializeStandard();
+        cardGame = new CardGame(board);
+        controller = new ChessGameController(cardGame);
+
+        controller.OnUpdateRequested += UpdateComponentState;
+    }
+
+    private void UpdateComponentState()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        controller.OnUpdateRequested -= UpdateComponentState;
+    }
+
+    private string GetSquareStyle(int row, int col)
+    {
+        var game = controller.CurrentGame;
+        var status = cardGame.GetChessSpaceStatus(new Position(row, col));
+
+        string style = "";
+
+        if (status != null)
+        {
+            if (status.IsFlame)
+            {
+                style += "background-color: rgba(233, 175, 49, 0.5);";
+            }
+            if (status.IsFrozen)
+            {
+                style += "background-color: rgba(111, 229, 229, 0.5);";
+            }
+            if (status.IsPossessed)
+            {
+                style += "border: 2px solid red;";
+            }
+        }
+
+        return style;
+    }
+}
