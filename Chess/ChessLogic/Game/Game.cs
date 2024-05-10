@@ -31,6 +31,10 @@
 
             return moves;
         }
+        public virtual bool IsVisible(Position position)
+        {
+            return true; // By default, every position is visible unless specified otherwise by a subclass.
+        }
         public virtual bool IsValidMove(Moves move)
         {
             
@@ -114,10 +118,6 @@ public void UndoMove(Moves move)
 
         CurrentTurn = CurrentTurn.Opponent();  
     }
-}
-public bool IsVisible(Position position)
-{
-    return ((FogOfWarChessGame)this).IsVisible(position);
 }
 
 

@@ -2,14 +2,15 @@ using Chesslogic;
 
 namespace Chesslogic
 {
-    public class FogOfWarChessGame : StandardChessGame
+    public class FogOfWarChessGame : GameDecorator 
     {
         private bool[,] visibilityGrid;
 
-        public FogOfWarChessGame(Board board) : base(board)
+         public FogOfWarChessGame(Game wrappedGame) : base(wrappedGame)
         {
-            visibilityGrid = new bool[8, 8]; 
-            UpdateVisibility(); 
+            this.Board = wrappedGame.Board; 
+            visibilityGrid = new bool[8, 8];
+            UpdateVisibility();
         }
 
         public override void MakeMove(Moves move)
@@ -77,13 +78,13 @@ namespace Chesslogic
         {
             return position.Row >= 0 && position.Row < 8 && position.Column >= 0 && position.Column < 8;
         }
-        public bool IsVisible(Position position)
-        {
-            if (IsInBounds(position))
-            {
-                return visibilityGrid[position.Row, position.Column];
-            }
-            return false;
-        }
+        public override bool IsVisible(Position position)
+{
+    if (IsInBounds(position))
+    {
+        return visibilityGrid[position.Row, position.Column];
+    }
+    return false;
+}
     }
 }

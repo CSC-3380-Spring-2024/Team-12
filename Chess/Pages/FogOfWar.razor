@@ -81,26 +81,26 @@
     }
 </div>
 
-
 @code {
     private ChessGameController controller;
 
     protected override void OnInitialized()
     {
         var board = Board.InitializeStandard(); 
-        var fogOfWarGame = new FogOfWarChessGame(board);  
-        controller = new ChessGameController(fogOfWarGame);
+        var standardGame = new StandardChessGame(board); 
+        var fogOfWarGame = new FogOfWarChessGame(standardGame); 
 
-        controller.OnUpdateRequested += UpdateComponentState; 
+        controller = new ChessGameController(fogOfWarGame); 
+        controller.OnUpdateRequested += UpdateComponentState;
     }
 
     private void UpdateComponentState()
     {
-        InvokeAsync(StateHasChanged);  
+        InvokeAsync(StateHasChanged); 
     }
 
     public void Dispose()
     {
-        controller.OnUpdateRequested -= UpdateComponentState;  
-    }
+        controller.OnUpdateRequested -= UpdateComponentState;
+}
 }

@@ -51,13 +51,26 @@
         transition: background-color 0.2s; 
         transition: transform 0.1s ease;    
     }
+    .GameModeCircle5 {
+        width: 20vw;
+        height: 10vh;
+        right:5% ;
+        top:20%;
+        position: absolute;
+        background: #B5C4B5;
+        border-radius: 26px;
+        transition: background-color 0.2s; 
+        transition: transform 0.1s ease;    
+    }
     .AtomicChess,
     .HordeMode,
     .CardChess,
-    .FogOfWar {
+    .FogOfWar
+     {
         width: 30vw;
         height: 10vh;
         color: white;
+        top:-15%;
         font-size: 50px;
         font-family: 'Inter', sans-serif;
         position: absolute;
@@ -65,6 +78,17 @@
         transition: transform 0.1s ease; 
         left:10%;
 
+    }
+    .Stacking{
+width: 15vw;
+        height: 10vh;
+        color: white;
+        font-size: 25px;
+        font-family: 'Inter', sans-serif;
+        position: absolute;
+        z-index: 2;
+        transition: transform 0.1s ease; 
+        left:10%;
     }
     
     .GameModeCircle1:hover {
@@ -87,6 +111,11 @@
         transform: scale(0.95);
        
     }
+    .GameModeCircle5:hover {
+        background: #A5A29E; 
+        transform: scale(0.95);
+       
+    }
     
     
 </style>
@@ -103,6 +132,9 @@
     </div>
 <div class="GameModeCircle4" @onclick="NavigateToFogOfWar">
     <div class="FogOfWar">Fog Of War<br/></div>
+    </div>
+<div class="GameModeCircle5" @onclick="NavigateToStacking">
+    <div class="Stacking">Stacking Mode<br/></div>
     </div>
 
 @code {
@@ -127,6 +159,12 @@
     {
        
         NavManager.NavigateTo("FogOfWar");
+
+    }
+    private void NavigateToStacking()
+    {
+       
+        NavManager.NavigateTo("stackedGames");
 
     }
 }

@@ -7,6 +7,8 @@ namespace Chesslogic
         private Position selectedPosition;
         private bool isPositionSelected;
         private List<Moves> potentialMovess;  
+         private List<Game> gameModes = new List<Game>();
+    private Board board;
     private List<Position> highlightedPositions;
 
             public event Action OnUpdateRequested;
@@ -22,8 +24,72 @@ namespace Chesslogic
             isPositionSelected = false;
             potentialMovess = new List<Moves>();
                     highlightedPositions = new List<Position>();
+                    this.board = board;
 
         }
+        public void AddGameMode(Game gameMode)
+    {
+        gameModes.Add(gameMode);
+        
+    }
+
+     public void RemoveGameMode(Type gameModeType)
+    {
+        gameModes.RemoveAll(g => g.GetType() == gameModeType);
+    }
+
+    public void MakeMove(Moves move)
+{
+    foreach (var game in gameModes)
+    {
+        Game currentGame = game;
+        while (currentGame != null)
+        {
+            currentGame.MakeMove(move); 
+
+            if (currentGame is GameDecorator decorator)
+            {
+                currentGame = decorator.WrappedGame; 
+            }
+            else
+            {
+                break; 
+            }
+        }
+    }
+    UpdateComponentState(); 
+}
+
+
+    public IEnumerable<Moves> GetLegalMoves(Position pos)
+    {
+        IEnumerable<Moves> moves = null;
+        foreach (var game in gameModes)
+        {
+            moves = game.LegalMoves(pos);
+        }
+        return moves;
+    }
+
+    private void UpdateComponentState()
+    {
+        OnUpdateRequested?.Invoke();
+    }
+public bool ContainsGameMode(Type gameModeType)
+    {
+        return gameModes.Any(g => g.GetType() == gameModeType);
+    }
+    public T GetGameOfType<T>() where T : Game
+{
+    return gameModes.OfType<T>().FirstOrDefault();
+}
+
+    public GameDecorator GetGameOfType(Type gameModeType)
+{
+    return gameModes.OfType<GameDecorator>().FirstOrDefault(g => g.GetType() == gameModeType);
+}
+
+
 
        
 

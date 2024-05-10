@@ -2,7 +2,7 @@ namespace Chesslogic
 {
     public abstract class GameDecorator : Game
     {
-        protected Game WrappedGame;
+        public Game WrappedGame;
 
         public GameDecorator(Game wrappedGame) : base(wrappedGame.Board)
         {
